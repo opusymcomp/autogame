@@ -35,7 +35,6 @@ $ pip install oauth2client
 ```
 $ cd autogame/slackserver
 $ ./start-server.sh
-
 ```
 Start the slackbot.
 You can send a request to the slackbot.

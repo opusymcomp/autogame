@@ -46,7 +46,7 @@ $ ./start-server.sh
 Start the Slackbot.
 You can send a request to the Slackbot.
 
-Input "game" to start interacting with Slackbot in your workspace.
+Input "game" to start interacting with Slackbot in your channel.
 
 ## License
 [MIT](https://github.com/opusymcomp/autogame/blob/master/LICENSE)

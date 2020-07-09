@@ -38,7 +38,7 @@ At that time, an API token is generated, so write it in the following file.
 ```
 autogame/slackserver/slackbot/slackbot_settings.py
 ```
-Finally, add a slackbot to the channel(e.g. #general) and you are ready to go.
+Finally, add a Slackbot to the channel(e.g. #general) and you are ready to go.
 ```
 $ cd autogame/slackserver
 $ ./start-server.sh

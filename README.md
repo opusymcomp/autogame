@@ -34,8 +34,9 @@ $ pip install oauth2client
 ## Usage
 First, you need a [Slack](https://slack.com/get-started#/create)
 account.
-Next, you need to create a
-[Slackbot](https://api.slack.com/bot-users).
+
+Next, you need to create a [Slackbot](https://api.slack.com/bot-users).
+
 At that time, an API token is generated, so write it in the following file.
 ```
 autogame/slackserver/slackbot/slackbot_settings.py

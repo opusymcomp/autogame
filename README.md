@@ -32,14 +32,21 @@ $ pip install gspread
 $ pip install oauth2client
 ```
 ## Usage
+First, you need a [Slack](https://slack.com/get-started#/create) account.
+Next, you need to create a [Slackbot](https://api.slack.com/bot-users).
+At that time, an API token is generated, so write it in the following file.
+```
+autogame/slackserver/slackbot/slackbot_settings.py
+```
+Finally, add a slackbot to the channel(e.g. #general) and you are ready to go.
 ```
 $ cd autogame/slackserver
 $ ./start-server.sh
 ```
-Start the slackbot.
-You can send a request to the slackbot.
+Start the Slackbot.
+You can send a request to the Slackbot.
 
-Input "game" to start interacting with slackbot in your workspace.
+Input "game" to start interacting with Slackbot in your workspace.
 
 ## License
 [MIT](https://github.com/opusymcomp/autogame/blob/master/LICENSE)
@@ -47,3 +54,4 @@ Input "game" to start interacting with slackbot in your workspace.
 ## Author
 - Ryota Kuga (Osaka Prefecture University)
 - Yudai Suzuki (Osaka Prefecture University)
+- Tomoharu Nakashima (Osaka Prefecture University)

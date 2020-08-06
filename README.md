@@ -32,10 +32,10 @@ $ pip install gspread
 $ pip install oauth2client
 ```
 ## Usage
-First, you need a [Slack](https://slack.com/get-started#/create)
+First, you need to create a [Slack](https://slack.com/get-started#/create)
 account.
 
-Next, you need to create a [Slackbot](https://api.slack.com/bot-users).
+Next, you need to create a [Slackbot](https://my.slack.com/services/new/bot).
 
 At that time, an API token is generated, so write it in the following file.
 ```

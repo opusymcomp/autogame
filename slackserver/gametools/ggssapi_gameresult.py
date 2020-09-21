@@ -3,71 +3,69 @@ import os
 import json
 import gspread
 import sys
-
+import subprocess
 from oauth2client.service_account import ServiceAccountCredentials
 
-def main(order, branch, fiftystorms, helios2018, hillstone2019, opuscom2018, rione2019, toyosugalaxy, helios2019, gliders2d, heliosbase, jyosen):
-    scope = ['https://spreadsheets.google.com/feeds']
-    path = os.path.expanduser("./sample.json") # set json file
-    doc_id = '' # documents id of google spread sheet
+def writeResults(order, branch, opp, result_map):
+    doc_id = subprocess.Popen(
+        'source ../config; echo ${GGSS_KEY}', stdout=subprocess.PIPE,
+        shell=True, executable='/bin/bash').communicate()[0].decode("utf8").strip("\n")
+    jsonfile = subprocess.Popen(
+        'source ../config; echo ${GGSS_JSON}', stdout=subprocess.PIPE,
+        shell=True, executable='/bin/bash').communicate()[0].decode("utf8").strip("\n")
+    sheetname = subprocess.Popen(
+        'source ../config; echo ${GGSS_SPREAD_SHEET_NAME}', stdout=subprocess.PIPE,
+        shell=True, executable='/bin/bash').communicate()[0].decode("utf8").strip("\n")
+
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    path = os.path.expanduser("./gametools/{}".format(jsonfile))  # set json file
+    doc_id = doc_id  # documents id of google spread sheet
     credentials = ServiceAccountCredentials.from_json_keyfile_name(path, scope)
     client = gspread.authorize(credentials)
-    gfile   = client.open_by_key(doc_id)
-    worksheet = gfile.worksheet('sheet1') # choose your worksheet
+    gfile = client.open_by_key(doc_id)
 
-    column = [order, branch,
-            float(fiftystorms['win']),
-            float(fiftystorms['lose']),
-            float(fiftystorms['draw']),
-            float(fiftystorms['our_score']),
-            float(fiftystorms['opp_score']),
-            float(helios2018['win']),
-            float(helios2018['lose']),
-            float(helios2018['draw']),
-            float(helios2018['our_score']),
-            float(helios2018['opp_score']),
-            float(hillstone2019['win']),
-            float(hillstone2019['lose']),
-            float(hillstone2019['draw']),
-            float(hillstone2019['our_score']),
-            float(hillstone2019['opp_score']),
-            float(opuscom2018['win']),
-            float(opuscom2018['lose']),
-            float(opuscom2018['draw']),
-            float(opuscom2018['our_score']),
-            float(opuscom2018['opp_score']),
-            float(rione2019['win']),
-            float(rione2019['lose']),
-            float(rione2019['draw']),
-            float(rione2019['our_score']),
-            float(rione2019['opp_score']),
-            float(toyosugalaxy['win']),
-            float(toyosugalaxy['lose']),
-            float(toyosugalaxy['draw']),
-            float(toyosugalaxy['our_score']),
-            float(toyosugalaxy['opp_score']),
-            float(helios2019['win']),
-            float(helios2019['lose']),
-            float(helios2019['draw']),
-            float(helios2019['our_score']),
-            float(helios2019['opp_score']),
-            float(gliders2d['win']),
-            float(gliders2d['lose']),
-            float(gliders2d['draw']),
-            float(gliders2d['our_score']),
-            float(gliders2d['opp_score']),
-            float(heliosbase['win']),
-            float(heliosbase['lose']),
-            float(heliosbase['draw']),
-            float(heliosbase['our_score']),
-            float(heliosbase['opp_score']),
-            float(jyosen['win']),
-            float(jyosen['lose']),
-            float(jyosen['draw']),
-            float(jyosen['our_score']),
-            float(jyosen['opp_score'])]
+    worksheet_list = gfile.worksheets()
+    write_count = 0;
 
-    worksheet.append_row(column)
+    if sheetname not in [wks.title for wks in worksheet_list]:
+        # create sheet
+        gfile.add_worksheet(title=sheetname, rows=1000, cols=100, index=0)
+        tmp_rows = []
 
-if __name__ == '__main__':
-    main("ORDER","branch",0,1,2,3,4,5,6,7,8,9)
+        opplist = subprocess.run(
+            'source ../config; echo ${OPP_TEAMS[@]}', stdout=subprocess.PIPE,
+            shell=True, executable='/bin/bash').stdout.decode("utf8").strip().split()
+        for i, opp in enumerate(opplist):
+            if i == 0:
+                tmp_rows.append(["", ""])
+                tmp_rows.append(["ORDER", "branch"])
+                write_count += 4
+            tmp_rows[0].extend([opp, "", "", "", ""])
+            tmp_rows[1].extend(["win", "draw", "lose", "our_score", "opp_score"])
+            write_count += 10
+        gfile.worksheet(sheetname).append_rows(tmp_rows)
+
+    worksheet = gfile.worksheet(sheetname)  # choose your worksheet
+    order_cell_list = worksheet.findall(order)
+    branch_cell_list = worksheet.findall(branch)
+    opp_cell = worksheet.find(opp)
+
+    target_cell_col = opp_cell.col
+    target_cell_row = 0
+    for order_cell in order_cell_list:
+        for branch_cell in branch_cell_list:
+            target_cell_row = order_cell.row
+
+    # initial write
+    if target_cell_row == 0:
+        worksheet.insert_row([order, branch], 3)
+        target_cell_row = 3
+
+    worksheet.update_cell(target_cell_row, target_cell_col, result_map["win"])
+    worksheet.update_cell(target_cell_row, target_cell_col+1, result_map["draw"])
+    worksheet.update_cell(target_cell_row, target_cell_col+2, result_map["lose"])
+    worksheet.update_cell(target_cell_row, target_cell_col+3, result_map["our_score"])
+    worksheet.update_cell(target_cell_row, target_cell_col+4, result_map["opp_score"])
+    write_count += 5
+
+    return write_count

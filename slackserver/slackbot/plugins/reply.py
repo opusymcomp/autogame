@@ -1,40 +1,52 @@
 # coding: utf-8
 import plugins.tools as tl
+import time
 import datetime
 import subprocess
+import shutil
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import default_reply
 
+import os
+import sys
+sys.path.append("{}/gametools".format(os.getcwd()))
+import ggssapi_gameresult as ggssapi
 
 @listen_to(r'^game$')
 def listen_func(message):
     message.reply('Choose new or load for game setting. ( ex. new )\n new : start with new setting \n load : start with load your setting')
 
+
 @listen_to(r'^new$')
 def listen_func(message):
     branchlist = tl.getBranch()
-    msg = 'Please set up to start the game.\n Choose your branch．( ex. br0 : master )\n'
+    msg = 'Please set up to start the game.\n Choose your branch．( ex. br0br5 )\n'
     for i in range(len(branchlist)):
         msg = msg + 'br' + str(i) + ' : ' + branchlist[i] + ' \n'
     message.reply(msg)
 
-@listen_to(r'^br\d+')
+
+@listen_to(r'^br\d')
 def listen_func(message):
     branch = message.body['text']
     tl.updateOption('branch', branch)
+    msg = 'You choose ' + branch + '.\n Choose the opponent team. ( ex. opp1opp12opp13 )\n When you choose \"opp\", you can select all teams\n'
+
     opplist = tl.getOpponent()
-    msg = 'You choose ' + branch + '.\n Choose the opponent team. ( ex. opp12345 )\n'
     for i in range(len(opplist)):
       msg = msg + 'opp'+ str(i) + ' : ' + opplist[i]+ '\n'
     message.reply(msg)
 
-@listen_to(r'^opp\d')
+
+@listen_to(r'^opp')
 def listen_func(message):
     opponent = message.body['text']
     tl.updateOption('opponent', opponent)
+
     msg = 'You choose '+ opponent + ' for the opponent team.\n How many games do you want to run? ( ex. 100 )'
     message.reply(msg)
+
 
 @listen_to(r'^\d+$')
 def listen_func(message):
@@ -42,8 +54,10 @@ def listen_func(message):
     tl.updateOption('gamenum', gamenum)
     msg = 'We run ' + gamenum + ' games.'
     message.reply(msg)
+
     msg = tl.confirmSetting()
     message.reply(msg)
+
 
 @listen_to(r'^load$')
 def listen_func(message):
@@ -53,30 +67,166 @@ def listen_func(message):
         msg = msg + 'set' + str(i+1) + ' : ' + settinglist[i] + ' \n'
     message.reply(msg)
 
+
 @listen_to(r'^set\d$')
 def listen_func(message):
     set = message.body['text']
     loadpath = tl.getLoadPath(set)
+
     msg = tl.confirmSetting(loadpath)
     message.reply(msg)
+
 
 @listen_to(r'^ok$')
 def cool_func(message):
     dt_now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    ip = subprocess.run(['./gametools/getIP.sh'],stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    ip = ip.stdout.decode("utf8")
-    print ("IP:",ip)
-    msg = 'The game starts soon at IP:'+ str(ip) +'\n ORDER:' + dt_now + '\n I will notify you when the all game finished. \n Do you want to save your setting? If you want, type the file name.　(ex. save:FILENAME.txt )'
-    message.reply(msg)
-    message.react('+1')
-    tl.storeOption('./slackbot/order/'+dt_now+'.txt', './slackbot/order/ORDER.txt')
-    subprocess.run(['./gametools/execute.sh', dt_now, ip])
-    msg = 'ORDER:'+dt_now+' finish!'
+
+    shutil.copy('./slackbot/order/ORDER.pkl', './slackbot/order/'+dt_now+'.pkl')
+
+    opt = tl.getOption('./slackbot/order/'+dt_now+'.pkl')
+    msg = "Options:\n   branches:{}\n   n_games:{}\n   opponents:{}\n".format(opt[0], opt[1], opt[2])
+    msg += "   total: {} games".format(len(opt[0])*int(opt[1])*len(opt[2]))
     message.reply(msg)
 
-@listen_to(r'^save:\w+.txt$')
+    available_hostlist = tl.getHost()
+
+    working_procs = {
+        "proc": [],
+        "setting": []
+    }
+    finished_procs = {
+        "proc": [],
+        "setting": []
+    }
+    all_settings = []
+
+    # -------- #
+    # execution
+    # -------- #
+    total_count = 0
+
+    # branch loop
+    for br_name in opt[0]:
+
+        # opponent loop
+        for opp_name in opt[2]:
+
+            # dir name can be specified by dt_now, br_name and opp_name
+            dirname = "{}/{}_{}".format(dt_now, br_name.split("/")[-1], opp_name.replace("/", "-"))
+
+            # append setting information
+            all_settings.append([dirname, br_name, opp_name])
+
+            # game loop
+            for game in range(int(opt[1])):
+
+                # check host
+                # loop until next host is found
+                host = None
+                while True:
+                    # the order should be reversed for pop
+                    for i in reversed(range(len(working_procs["proc"]))):
+                        if working_procs["proc"][i].poll() is not None:
+                            p = working_procs["proc"].pop(i)
+                            s = working_procs["setting"].pop(i)
+                            finished_procs["proc"].append(p)
+                            finished_procs["setting"].append(s)
+
+                            # recover available hostlist
+                            available_hostlist.append(s[1])
+
+                            # progress report
+                            total_count += 1
+                            if total_count % 100 == 0:
+                                msg = "Progress Report\n  {} games are finished.\n  {} games left.".format(total_count, len(opt[0]) * int(opt[1]) * len(opt[2]) - total_count)
+                                message.reply(msg)
+
+                    # if finished processes are found, "endgame.sh" will be executed
+                    while finished_procs["proc"] and finished_procs["setting"]:
+                        p = finished_procs["proc"].pop(0)
+                        s = finished_procs["setting"].pop(0)
+                        subprocess.Popen(['./gametools/endgame.sh', s[0], s[1], s[2], str(s[3]), s[4]])
+
+                    for i, h in enumerate(available_hostlist):
+                        check = subprocess.run(['./gametools/getHost.sh', h],stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode("utf8").strip("\n")
+                        if check == "1":
+                            # the host is available
+                            host = available_hostlist.pop(i)
+                            break
+                    if host is not None:
+                        break
+
+                msg = "Host {} is assigned (Settings: branch {} gameID {} opp {})\n".format(host, br_name, game, opp_name)
+                # message.reply(msg)
+                print(msg)
+
+                # execute a game at a host
+                proc = subprocess.Popen(['./gametools/startgame.sh', dirname, host, br_name, str(game), opp_name],
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                # append process information
+                working_procs["proc"].append(proc)
+                working_procs["setting"].append([dirname, host, br_name, game, opp_name])
+
+
+    # wait all process
+    for subproc in working_procs["proc"]:
+        subproc.wait()
+
+    # all working processes are finished
+    while working_procs["proc"] and working_procs["setting"]:
+        p = working_procs["proc"].pop(0)
+        s = working_procs["setting"].pop(0)
+        subprocess.run(['./gametools/endgame.sh', s[0], s[1], s[2], str(s[3]), s[4]])
+        # recover available hostlist (but not needed)
+        available_hostlist.append(s[1])
+
+    # write results in ggss
+    write_count = 0
+    for setting in all_settings:
+        dirname = setting[0]
+        br_name = setting[1]
+        opp_name = setting[2]
+
+        # initialize
+        count = 0
+        result_map = {
+            'win': 0.0,
+            'lose': 0.0,
+            'draw': 0.0,
+            'our_score': 0.0,
+            'opp_score': 0.0
+        }
+
+        # calculate analyzed results
+        for i, line in enumerate(open("./log/{}/results.csv".format(dirname), "r")):
+            tmp = line.split("\n")[0].split(",")
+            result_map["win"] += 1.0 if tmp[7] == "3" else 0
+            result_map["draw"] += 1.0 if tmp[7] == "1" else 0
+            result_map["lose"] += 1.0 if tmp[7] == "0" else 0
+            result_map["our_score"] += float(tmp[3])
+            result_map["opp_score"] += float(tmp[4])
+            count += 1
+
+        # average
+        result_map["our_score"] /= float(count)
+        result_map["opp_score"] /= float(count)
+
+        # write result_map to ggss
+        if write_count >= 100:
+            # write requests are restrected per 100 seconds
+            print("Write requests for Google Spread Sheet are restrected per 100 seconds. Please wait...")
+            time.sleep(150)
+            write_count = 0
+        write_count += ggssapi.writeResults(dt_now, br_name, opp_name, result_map)
+
+    msg = 'ORDER:'+dt_now+' finish!\nDo you want to save your setting? If you want, type the file name.　(ex. save:FILENAME )'
+    message.reply(msg)
+
+
+@listen_to(r'^save:\w+$')
 def listen_func(message):
-    savedir = message.body['text'].replace('save:','')
-    tl.storeOption('./slackbot/setting/'+savedir)
-    msg = 'Save the option to ' + savedir + '.'
+    savepath = message.body['text'].replace('save:', '')
+    shutil.copy('./slackbot/setting/option.pkl', './slackbot/setting/'+savepath)
+    msg = 'Save the option to ' + savepath + '.'
     message.reply(msg)

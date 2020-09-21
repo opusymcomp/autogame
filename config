@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# slack API Token
+# ! https://rctools.slack.com/apps/new/A0F7YS25R-bots
+SLACK_API_TOKEN=""
+
+# google spread sheat key
+# ! https://tanuhack.com/operate-spreadsheet/
+#   (in Japanese)
+GGSS_KEY=""
+
+# google spread sheat json
+# ! Please put this json file into autogame/slackserver/gametools (in slackserver side)
+GGSS_JSON=""
+
+# google spread sheet name
+# if the sheet with this name is not in ggss, the new sheet will be created
+GGSS_SPREAD_SHEET_NAME="sheet1"
+
+# user name @host computer
+USER_NAME=""
+
+# autogame dir (gameserver side)
+HOST_AUTOGAME_DIR="/home/$USER_NAME/rcss/autogame"
+
+# LogAnalyzer3 dir (gameserver side)
+LOGANALYZER3_DIR="/home/$USER_NAME/rcss/loganalyzer3"
+
+# log dir (in gameserver side)
+LOG_DIR="/home/$USER_NAME/log"
+
+# librcsc dir (gameserver and slackserver)
+LIBRCSC_DIR="$HOME/rcss"
+
+# our teams dir (gameserver and slackserver)
+OUR_TEAM="$HOME/agent2d"
+
+# opponent teams (gameserver side)
+# ! Note that opp team binaries are supposed to be in "/home/$USER_NAME/rcss/teams" and every team must have executable files "start.sh" and "kill" in their directories (e.g. "/home/$USER_NAME/rcss/teams/rc2019/cyrus/start.sh")
+#   If you want to change the place of binaries, please refer to `gameserver/autolog.sh`
+OPP_TEAMS=(
+    "rc2019/cyrus"
+    "rc2019/fcpgpr"
+    "rc2019/fractals"
+    "rc2019/fraunited"
+    "rc2019/helios"
+    "rc2019/hfutengine"
+    "rc2019/hillstone"
+    "rc2019/itandroids"
+    "rc2019/mt"
+    "rc2019/razi"
+    "rc2019/receptivity"
+    "rc2019/rione"
+    "rc2019/robocin"
+    "rc2019/titans"
+    "rc2019/yushan""
+)
+
+# host names ( gameserver )
+HOST_NAMES=(
+    "host1"
+    "host2"
+)

@@ -1,18 +1,18 @@
 #!/bin/bash
-ORDER=$1
-IP=$2
+DIR=$1
+HOST=$2
 BRANCH=$3
-OPT=${@:3}
+GAMENUM=$4
+OPP=$5
 
+source ../config
 cd `dirname $0`
 
-ssh username@$IP "cd rcss && ./autolog.sh $OPT"
-wait
-
-DIR=${ORDER}_${BRANCH}_${IP}
-
 mkdir -p ../log/${DIR}
-scp username@$IP:~/rcss/log/*.csv ../log/${DIR}
+DATE=`date +%Y%m%d%0k%M`
+
+ssh ${USER_NAME}@${HOST} "cd ${HOST_AUTOGAME_DIR}/gameserver && ./autolog.sh $BRANCH $GAMENUM $OPP" &> ../log/${DIR}/game${GAMENUM}.log
 wait
 
-python loganalyzerAve.py ${ORDER} ${BRANCH} ${DIR}
+# return $HOST
+echo $HOST

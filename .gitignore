@@ -1,0 +1,4 @@
+.idea/*
+*__pycache__*
+slackserver/gametools/*.json
+

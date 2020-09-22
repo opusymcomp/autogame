@@ -8,7 +8,7 @@ source ../config
 export PATH=$LOGANALYZER3_DIR:$PATH
 
 cd $OUR_TEAM
-git fetch && git checkout $BRANCH
+git fetch && git checkout $BRANCH && git pull
 ./bootstrap
 ./configure --with-librcsc=$LIBRCSC_DIR
 make
@@ -56,8 +56,3 @@ mv ${LOG_DIR}/${YEAR}*.rcl.gz ${LOG_DIR}/game${GAMENUM}.rcl.gz
 cd ${LOG_DIR}
 loganalyzer3 ${LOG_DIR}/ --side l
 mv *csv game${GAMENUM}.csv
-
-# delete branch (not needed?)
-cd $OUR_TEAM
-git fetch && git checkout master
-# git branch -D $BRANCH

@@ -25,7 +25,7 @@ def writeResults(order, branch, opp, result_map):
     gfile = client.open_by_key(doc_id)
 
     worksheet_list = gfile.worksheets()
-    write_count = 0;
+    write_count = 0
 
     if sheetname not in [wks.title for wks in worksheet_list]:
         # create sheet
@@ -60,6 +60,7 @@ def writeResults(order, branch, opp, result_map):
     if target_cell_row == 0:
         worksheet.insert_row([order, branch], 3)
         target_cell_row = 3
+        write_count += 2
 
     worksheet.update_cell(target_cell_row, target_cell_col, result_map["win"])
     worksheet.update_cell(target_cell_row, target_cell_col+1, result_map["draw"])

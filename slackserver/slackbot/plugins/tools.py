@@ -68,7 +68,7 @@ def getBranch():
     os.chdir(our_team)
     os.system("git fetch -p")
     cmd = ("git branch -r")
-    branchlist = resCmd(cmd).decode('utf-8').strip().strip("*  ").split('\n  ')
+    branchlist = resCmd(cmd).decode('utf-8').replace("  origin/", "").replace("\nHEAD -> origin/master", "").split("\n")[:-1]
     os.chdir(exepath)
     return branchlist
 

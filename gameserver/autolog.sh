@@ -8,10 +8,7 @@ source ../config
 export PATH=$LOGANALYZER3_DIR:$PATH
 
 cd $OUR_TEAM
-git fetch && git checkout master
-git branch | grep -vE '^\*|master$|develop$' | xargs -I % git branch -D %
-git checkout -B $BRANCH $BRANCH
-git pull
+git fetch && git checkout $BRANCH
 ./bootstrap
 ./configure --with-librcsc=$LIBRCSC_DIR
 make

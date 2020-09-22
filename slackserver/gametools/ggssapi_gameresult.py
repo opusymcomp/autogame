@@ -54,7 +54,8 @@ def writeResults(order, branch, opp, result_map):
     target_cell_row = 0
     for order_cell in order_cell_list:
         for branch_cell in branch_cell_list:
-            target_cell_row = order_cell.row
+            if order_cell.row == branch_cell.row:
+                target_cell_row = order_cell.row
 
     # initial write
     if target_cell_row == 0:

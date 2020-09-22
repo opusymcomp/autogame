@@ -60,4 +60,4 @@ mv *csv game${GAMENUM}.csv
 # delete branch (not needed?)
 cd $OUR_TEAM
 git fetch && git checkout master
-git branch -D $BRANCH
+# git branch -D $BRANCH

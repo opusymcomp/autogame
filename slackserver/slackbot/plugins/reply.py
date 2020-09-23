@@ -213,7 +213,7 @@ def cool_func(message):
         result_map["opp_score"] /= float(count)
 
         # write result_map to ggss
-        if write_count >= 90:
+        if write_count >= 50:
             # write requests are restricted per 100 seconds
             print("Write requests for Google Spread Sheet are restricted per 100 seconds. Please wait...")
             time.sleep(110)

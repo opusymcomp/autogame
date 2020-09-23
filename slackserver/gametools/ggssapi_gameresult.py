@@ -6,6 +6,7 @@ import sys
 import subprocess
 from oauth2client.service_account import ServiceAccountCredentials
 
+
 def writeResults(order, branch, opp, result_map):
     doc_id = subprocess.Popen(
         'source ../config; echo ${GGSS_KEY}', stdout=subprocess.PIPE,
@@ -63,11 +64,10 @@ def writeResults(order, branch, opp, result_map):
         target_cell_row = 3
         write_count += 2
 
-    worksheet.update_cell(target_cell_row, target_cell_col, result_map["win"])
-    worksheet.update_cell(target_cell_row, target_cell_col+1, result_map["draw"])
-    worksheet.update_cell(target_cell_row, target_cell_col+2, result_map["lose"])
-    worksheet.update_cell(target_cell_row, target_cell_col+3, result_map["our_score"])
-    worksheet.update_cell(target_cell_row, target_cell_col+4, result_map["opp_score"])
+    cell_list = worksheet.range(target_cell_row, target_cell_col)
+    for cell, result in zip(cell_list, result_map.values()):
+        cell.value = result
+    worksheet.update_cells(cell_list)
     write_count += 5
 
     return write_count

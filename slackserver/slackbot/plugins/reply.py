@@ -192,8 +192,8 @@ def cool_func(message):
         count = 0
         result_map = {
             'win': 0.0,
-            'lose': 0.0,
             'draw': 0.0,
+            'lose': 0.0,
             'our_score': 0.0,
             'opp_score': 0.0
         }

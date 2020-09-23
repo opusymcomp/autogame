@@ -64,7 +64,7 @@ def writeResults(order, branch, opp, result_map):
         target_cell_row = 3
         write_count += 2
 
-    cell_list = worksheet.range(target_cell_row, target_cell_col)
+    cell_list = worksheet.range(target_cell_row, target_cell_col, target_cell_row, target_cell_col+5)
     for cell, result in zip(cell_list, result_map.values()):
         cell.value = result
     worksheet.update_cells(cell_list)

@@ -84,6 +84,11 @@ After team-binaries setting, you send the binaries to all hosts.
 $ ./send_files_to_all_hosts.sh /path/to/team-binary-dir /home/fukushima/rcss/teams/
 ```
 
+Send this `autogame` to all hosts (the place is same as `HOST_AUTOGAME_DIR`)
+```
+$ ./send_files_to_all_hosts.sh /path/to/autogame /home/fukushima/rcss/
+```
+
 Create Slack workspace, and get Slack API Token (https://rctools.slack.com/apps/new/A0F7YS25R-bots).
 After that, invite this slack bot to a channel.
 Please write the API token to `SLACK_API_TOKEN` in `config`.
@@ -95,7 +100,6 @@ Put the json file to autogame server.
 ```
 $ mv /path/to/json /path/to/autogame/slackserver/gametools/
 ```
-
 
 ## Usage
 You can select hosts, opp_teams, google spread sheet name from `config`.

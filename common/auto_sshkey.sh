@@ -2,14 +2,7 @@
 
 source ./hostnames
 
-# superuser name of remote pc (supposed that all clients have same superuser)
-shared_username="scom"
-# new username you want to create
-username="fukushima"
-# The first and second parts of IP address (third and last parts are specified at `hostnames`)
-network="157.16."
 read -sp "Password: " pswd
-
 
 echo ""
 echo "# -------------------------------- #"

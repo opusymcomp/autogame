@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# superuser name of remote pc (supposed that all clients have same superuser)
+shared_username="scom"
+# new username you want to create
+username="fukushima"
+# The first and second parts of IP address (third and last parts are specified at `hostnames`)
+network="192.168."
+
 # used for `auto_sshkey.sh`
 hostnames_ids=(
-	"hostname1 1.13"
-	"hostname2 1.15"
+	"host1 1.9"
+  "host2 1.10"
 )

@@ -8,7 +8,6 @@
 
 source ./hostnames
 
-username="fukushima"
 read -sp "Host Password (if you use \"sudo -S\"): " pswd
 echo ""
 

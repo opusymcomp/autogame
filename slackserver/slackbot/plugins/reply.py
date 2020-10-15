@@ -84,7 +84,7 @@ def cool_func(message):
     shutil.copy('./slackbot/order/ORDER.pkl', './slackbot/order/'+dt_now+'.pkl')
 
     opt = tl.getOption('./slackbot/order/'+dt_now+'.pkl')
-    msg = "Options:\n   branches:{}\n   n_games:{}\n   opponents:{}\n".format(opt[0], opt[1], opt[2])
+    msg = "ORDER:{}\nOptions:\nbranches:{}\nn_games:{}\nopponents:{}\n".format(dt_now, opt[0], opt[1], opt[2])
     msg += "   total: {} games".format(len(opt[0])*int(opt[1])*len(opt[2]))
     message.reply(msg)
 
@@ -137,7 +137,7 @@ def cool_func(message):
 
                             # progress report
                             total_count += 1
-                            if total_count % 100 == 0:
+                            if total_count % 1000 == 0:
                                 msg = "Progress Report\n  {} games are finished.\n  {} games left.".format(total_count, len(opt[0]) * int(opt[1]) * len(opt[2]) - total_count)
                                 message.reply(msg)
 

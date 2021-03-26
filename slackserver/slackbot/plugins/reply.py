@@ -84,7 +84,7 @@ def cool_func(message):
     shutil.copy('./slackbot/order/ORDER.pkl', './slackbot/order/'+dt_now+'.pkl')
 
     opt = tl.getOption('./slackbot/order/'+dt_now+'.pkl')
-    msg = "ORDER:{}\nOptions:\nbranches:{}\nn_games:{}\nopponents:{}\n".format(dt_now, opt[0], opt[1], opt[2])
+    msg = "ORDER:{}\n   Options:\n   branches:{}\n   n_games:{}\n   opponents:{}\n".format(dt_now, opt[0], opt[1], opt[2])
     msg += "   total: {} games".format(len(opt[0])*int(opt[1])*len(opt[2]))
     message.reply(msg)
 

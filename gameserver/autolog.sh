@@ -47,7 +47,7 @@ ${HOME}/rcss/teams/${OPP}/kill
 # rename game logs
 mkdir -p ${LOG_DIR}/game${GAMENUM}
 mv /tmp/*.ocl ${LOG_DIR}/game${GAMENUM}
-tar czf ${LOG_DIR}/game${GAMENUM}.ocl.gz ${LOG_DIR}/game${GAMENUM}
+tar czf ${LOG_DIR}/game${GAMENUM}.ocl.tar.gz ${LOG_DIR}/game${GAMENUM}
 YEAR=`date +%Y`
 mv ${LOG_DIR}/${YEAR}*.rcg.gz ${LOG_DIR}/game${GAMENUM}.rcg.gz
 mv ${LOG_DIR}/${YEAR}*.rcl.gz ${LOG_DIR}/game${GAMENUM}.rcl.gz

@@ -48,7 +48,7 @@ def writeResults(order, branch, opp, result_map):
         gfile.worksheet(sheetname).append_rows(tmp_rows)
 
     worksheet = gfile.worksheet(sheetname)  # choose your worksheet
-    read_count += 1
+    read_count *= 2
     order_cell_list = worksheet.findall(order)
     read_count += len(order_cell_list)
     branch_cell_list = worksheet.findall(branch)
@@ -67,12 +67,16 @@ def writeResults(order, branch, opp, result_map):
     if target_cell_row == 0:
         worksheet.insert_row([order, branch], 3)
         target_cell_row = 3
+        read_count += 1
         write_count += 2
 
     cell_list = worksheet.range(target_cell_row, target_cell_col, target_cell_row, target_cell_col+6)
+    read_count += 1
     for cell, result in zip(cell_list, result_map.values()):
         cell.value = result
+        read_count += 1
     worksheet.update_cells(cell_list)
-    write_count += 5
+    read_count += 6
+    write_count += 6
 
     return read_count, write_count

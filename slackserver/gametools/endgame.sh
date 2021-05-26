@@ -12,7 +12,7 @@ cd `dirname $0`
 scp ${USER_NAME}@$HOST:${LOG_DIR}/game${GAMENUM}.* ../log/${DIR}
 
 # add information to result.csv
-cat ../log/${DIR}/game${GAMENUM}.csv | tail -n 1 >> ../log/${DIR}/results.csv
+cat ../log/${DIR}/game${GAMENUM}.csv | tail -n 1 | sed -e "s/[0-9]*,/game${GAMENUM},/" >> ../log/${DIR}/results.csv
 
 # delete files in host
 ssh ${USER_NAME}@$HOST "rm -r ${LOG_DIR}/game*; rmdir ${LOG_DIR}"

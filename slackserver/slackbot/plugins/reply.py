@@ -195,7 +195,8 @@ def cool_func(message):
             'draw': 0.0,
             'lose': 0.0,
             'our_score': 0.0,
-            'opp_score': 0.0
+            'opp_score': 0.0,
+            'dead_players': []
         }
 
         # calculate analyzed results
@@ -206,11 +207,16 @@ def cool_func(message):
             result_map["lose"] += 1.0 if tmp[7] == "0" else 0
             result_map["our_score"] += float(tmp[3])
             result_map["opp_score"] += float(tmp[4])
+            if int(tmp[38]) > 0:
+                result_map["dead_players"].append(tmp[0]) 
             count += 1
 
         # average
         result_map["our_score"] /= float(count)
         result_map["opp_score"] /= float(count)
+
+        # reformat
+        result_map["dead_players"] = ",".join(result_map["dead_players"])
 
         # write result_map to ggss
         if write_count >= 50:

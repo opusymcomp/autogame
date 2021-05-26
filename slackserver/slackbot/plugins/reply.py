@@ -182,6 +182,7 @@ def cool_func(message):
         available_hostlist.append(s[1])
 
     # write results in ggss
+    read_count = 0
     write_count = 0
     for setting in all_settings:
         dirname = setting[0]
@@ -219,12 +220,17 @@ def cool_func(message):
         result_map["dead_players"] = ",".join(result_map["dead_players"])
 
         # write result_map to ggss
-        if write_count >= 50:
+        if write_count >= 80 or read_count >= 80:
             # write requests are restricted per 100 seconds
-            print("Write requests for Google Spread Sheet are restricted per 100 seconds. Please wait...")
-            time.sleep(110)
+            print("Requests for Google Spread Sheet are restricted per 100 seconds. Please wait...")
+            time.sleep(100)
             write_count = 0
-        write_count += ggssapi.writeResults(dt_now, br_name, opp_name, result_map)
+            read_count = 0
+        tmp_read_count, tmp_write_count = ggssapi.writeResults(dt_now, br_name, opp_name, result_map)
+        read_count += tmp_read_count
+        write_count += tmp_write_count
+        print('r:', read_count)
+        print('w:', write_count)
 
     msg = 'ORDER:'+dt_now+' finish!\nDo you want to save your setting? If you want, type the file name.　(ex. save:FILENAME )'
     message.reply(msg)

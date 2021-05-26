@@ -27,6 +27,7 @@ def writeResults(order, branch, opp, result_map):
 
     worksheet_list = gfile.worksheets()
     write_count = 0
+    read_count = len([wks for wks in worksheet_list])
 
     if sheetname not in [wks.title for wks in worksheet_list]:
         # create sheet
@@ -47,9 +48,13 @@ def writeResults(order, branch, opp, result_map):
         gfile.worksheet(sheetname).append_rows(tmp_rows)
 
     worksheet = gfile.worksheet(sheetname)  # choose your worksheet
+    read_count += 1
     order_cell_list = worksheet.findall(order)
+    read_count += len(order_cell_list)
     branch_cell_list = worksheet.findall(branch)
+    read_count += len(branch_cell_list)
     opp_cell = worksheet.find(opp)
+    read_count += 1
 
     target_cell_col = opp_cell.col
     target_cell_row = 0
@@ -70,4 +75,4 @@ def writeResults(order, branch, opp, result_map):
     worksheet.update_cells(cell_list)
     write_count += 5
 
-    return write_count
+    return read_count, write_count

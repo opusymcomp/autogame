@@ -37,14 +37,14 @@ def writeResults(order, branch, opp, result_map):
         opplist = subprocess.run(
             'source ../config; echo ${OPP_TEAMS[@]}', stdout=subprocess.PIPE,
             shell=True, executable='/bin/bash').stdout.decode("utf8").strip().split()
-        for i, opp in enumerate(opplist):
+        for i, o in enumerate(opplist):
             if i == 0:
                 tmp_rows.append(["", ""])
                 tmp_rows.append(["ORDER", "branch"])
                 write_count += 4
-            tmp_rows[0].extend([opp, "", "", "", "", ""])
+            tmp_rows[0].extend([o, "", "", "", "", ""])
             tmp_rows[1].extend(["win", "draw", "lose", "our_score", "opp_score", "dead_players"])
-            write_count += 10
+            write_count += 12
         gfile.worksheet(sheetname).append_rows(tmp_rows)
 
     worksheet = gfile.worksheet(sheetname)  # choose your worksheet

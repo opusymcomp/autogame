@@ -192,11 +192,20 @@ def cool_func(message):
         # initialize
         count = 0
         result_map = {
+            'n_games': 0,
             'win': 0.0,
             'draw': 0.0,
             'lose': 0.0,
+            'win_rate': 0.0,
             'our_score': 0.0,
             'opp_score': 0.0,
+            'our_possession': 0.0,
+            'our_passes': 0.0,
+            'opp_passes': 0.0,
+            'our_through_passes': 0.0,
+            'opp_through_passes': 0.0,
+            'our_shoot': 0.0,
+            'opp_shoot': 0.0,
             'dead_players': []
         }
 
@@ -204,17 +213,29 @@ def cool_func(message):
         for i, line in enumerate(open("./log/{}/results.csv".format(dirname), "r")):
             tmp = line.split("\n")[0].split(",")
             result_map["win"] += 1.0 if tmp[7] == "3" else 0
+            result_map["win_rate"] += 1.0 if tmp[7] == "3" else 0
             result_map["draw"] += 1.0 if tmp[7] == "1" else 0
             result_map["lose"] += 1.0 if tmp[7] == "0" else 0
             result_map["our_score"] += float(tmp[3])
             result_map["opp_score"] += float(tmp[4])
+            result_map["our_possession"] += float(tmp[10])
+            result_map["our_passes"] += float(tmp[14])
+            result_map["opp_passes"] += float(tmp[19])
+            result_map["our_through_passes"] += float(tmp[24])
+            result_map["opp_through_passes"] += float(tmp[25])
+            result_map["our_shoot"] += float(tmp[30])
+            result_map["opp_shoot"] += float(tmp[31])
             if int(tmp[38]) > 0:
                 result_map["dead_players"].append(tmp[0]) 
             count += 1
 
+        result_map["n_games"] = count
+
         # average
-        result_map["our_score"] /= float(count)
-        result_map["opp_score"] /= float(count)
+        for key in result_map.keys():
+            if key == "win" or key == "draw" or key == "lose" or key == "n_games" or key == "dead_players":
+                continue
+            result_map[key] /= float(count)
 
         # reformat
         result_map["dead_players"] = ",".join(result_map["dead_players"])

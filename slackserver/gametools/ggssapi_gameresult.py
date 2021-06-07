@@ -46,12 +46,13 @@ def writeResults(order, branch, opp, result_map):
         #     tmp_rows[0].extend([o, "", "", "", "", ""])
         #     tmp_rows[1].extend(["win", "draw", "lose", "our_score", "opp_score", "dead_players"])
         #     write_count += 12
+        # gfile.worksheet(sheetname).append_rows(tmp_rows)
         # ----- new-format ----- #
-        tmp_rows.append(["ORDER", "branch", "opp_name", "comment/memo"])
+        tmp_rows.extend(["ORDER", "branch", "opp_name", "comment/memo"])
         tmp_rows.extend(result_map.keys())
         write_count += len(tmp_rows)
 
-        gfile.worksheet(sheetname).append_rows(tmp_rows)
+        gfile.worksheet(sheetname).append_row(tmp_rows)
 
     worksheet = gfile.worksheet(sheetname)  # choose your worksheet
     read_count *= 2
@@ -90,7 +91,7 @@ def writeResults(order, branch, opp, result_map):
     # ------ new-format ----- #
     write_info = [order, branch, opp, ""]
     write_info.extend(result_map.values())
-    worksheet.insert_row(write_info, 3)
+    worksheet.insert_row(write_info, 2)
     write_count += len(write_info)
     read_count += len(write_info)
 

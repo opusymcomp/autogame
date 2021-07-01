@@ -9,7 +9,7 @@ echo "# -------------------------------- #"
 echo "  server"
 echo "  install ssh..."
 echo "# -------------------------------- #"
-sudo apt-get install ssh openssh-server
+sudo apt-get install ssh openssh-server sshpass
 
 echo "# -------------------------------- #"
 echo "  clients"

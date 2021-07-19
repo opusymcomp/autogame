@@ -107,6 +107,8 @@ def cool_func(message):
 
     # branch loop
     for br_name in opt[0]:
+        # send my team branch binary
+        subprocess.run(['./gametools/branchcompile.sh', br_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # opponent loop
         for opp_name in opt[2]:
@@ -148,7 +150,7 @@ def cool_func(message):
                         subprocess.Popen(['./gametools/endgame.sh', s[0], s[1], s[2], str(s[3]), s[4]])
 
                     for i, h in enumerate(available_hostlist):
-                        check = subprocess.run(['./gametools/getHost.sh', h],stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode("utf8").strip("\n")
+                        check = subprocess.run(['./gametools/getHost.sh', h], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode("utf8").strip("\n")
                         if check == "1":
                             # the host is available
                             host = available_hostlist.pop(i)

@@ -8,13 +8,13 @@ source ../config
 export PATH=$LOGANALYZER3_DIR:$PATH
 
 cd $OUR_TEAM
-git fetch && git checkout $BRANCH && git pull
-./bootstrap
-./configure --with-librcsc=$LIBRCSC_DIR
-make
 
 #your team directory
-TEAM_L="'${OUR_TEAM}/src/start.sh -t develop --offline-logging'"
+
+#if don't use same team name
+TEAM_L="'${OUR_TEAM}/src/start.sh --offline-logging'"
+#if use same team name
+#TEAM_L="'${OUR_TEAM}/src/start.sh -t develop --offline-logging'"
 
 mkdir -p ${LOG_DIR}
 rm ${LOG_DIR}/*

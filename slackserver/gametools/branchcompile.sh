@@ -16,4 +16,4 @@ git fetch && git checkout $BRANCH && git pull
 ./configure --with-librcsc=$LIBRCSC_DIR
 make
 
-cd ${SCRIPT_DIR}/slackbot/plugins
+cd ${SCRIPT_DIR}

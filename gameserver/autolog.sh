@@ -1,8 +1,9 @@
 #!/bin/bash
-
-BRANCH=$1
+OUR=$1
 GAMENUM=$2
 OPP=$3
+BRANCHFLAG=$4
+SYNCHFLAG=$5
 
 source ../config
 export PATH=$LOGANALYZER3_DIR:$PATH
@@ -10,26 +11,25 @@ export PATH=$LOGANALYZER3_DIR:$PATH
 cd $OUR_TEAM
 
 #your team directory
+if [[ $BRANCHFLAG == "true" ]]; then
+	#if don't use same team name
+	TEAM_L="'${OUR_TEAM}/src/start.sh --offline-logging'"
+	#if use same team name
+	#TEAM_L="'${OUR_TEAM}/src/start.sh -t develop --offline-logging'"
+else
+	TEAM_L="$HOME/rcss/teams/$OUR/start.sh"
+fi
 
-#if don't use same team name
-TEAM_L="'${OUR_TEAM}/src/start.sh --offline-logging'"
-#if use same team name
-#TEAM_L="'${OUR_TEAM}/src/start.sh -t develop --offline-logging'"
+echo ${TEAM_L}
 
 mkdir -p ${LOG_DIR}
 rm ${LOG_DIR}/*
 
 # start loop
 TEAM_R="$HOME/rcss/teams/$OPP/start.sh"
-SYNCH="true"
-if [[ ${TEAM_R} == *fractals* ]]; then
-	SYNCH="false"
-elif [[ ${TEAM_R} == *fraunited* ]]; then
-	SYNCH="false"
-fi
 
 rcssserver server::auto_mode = 1 \
-       server::synch_mode = $SYNCH \
+       server::synch_mode = $SYNCHFLAG \
        server::team_l_start = ${TEAM_L} server::team_r_start = ${TEAM_R} \
        server::kick_off_wait = 50 \
        server::half_time = 300 \
@@ -41,7 +41,11 @@ rcssserver server::auto_mode = 1 \
        server::text_log_compression = 1
 
 # kill process
-${OUR_TEAM}/kill
+if [[ $BRANCHFLAG == "true" ]]; then
+	${OUR_TEAM}/kill
+else
+	${HOME}/rcss/teams/${OUR}/kill
+fi
 ${HOME}/rcss/teams/${OPP}/kill
 
 # rename game logs

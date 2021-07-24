@@ -57,7 +57,7 @@ $ cd ./auto_sshkey.sh
 
 Setup all hosts.
 The following install directories are same as the place described at `config`.
-__Do not forget__ to replace to your settings. 
+__Do not forget__ to replace to your settings.
 
 Install loganalyzer3 (the place is same as `LOGANALYZER3_DIR` in `config`)
 ```
@@ -70,11 +70,6 @@ $ ./cmd_to_all_hosts.sh "cd /home/fukushima/rcss/opuSCOM/; git clone (team_repos
 Make a log directory (the place is same as `LOG_DIR` in `config`)
 ```
 $ ./cmd_to_all_hosts.sh "cd /home/fukushima/rcss/log"
-```
-Send librcsc (the place is same as `LIBRCSC_DIR` in `config`)
-```
-$ ./send_files_to_all_hosts.sh /home/fukushima/rcss/opuSCOM/lib /home/fukushima/rcss/opuSCOM/
-$ ./send_files_to_all_hosts.sh /home/fukushima/rcss/opuSCOM/include /home/fukushima/rcss/opuSCOM/
 ```
 Send all team-binaries from your current PC to all hosts.
 Please setup the all team-binaries before sending.
@@ -121,4 +116,4 @@ Input `game` to start interacting with Slackbot in your channel.
 - Tomoharu Nakashima (Osaka Prefecture University)
 
 Forked by
-- Takuya Fukushima (Osaka Prefecture University) 
+- Takuya Fukushima (Osaka Prefecture University)

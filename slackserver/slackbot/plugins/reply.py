@@ -151,13 +151,13 @@ def cool_func(message):
                 continue
 
             # check opp team can use synce
-            if re.search("fractals", our_name) or re.search("fractals", opp_name):
+            if ("fractals" in our_name) or ("fractals" in opp_name):
                 synchflag = "false"
                 print(our_name, opp_name, ":synchflag ", synchflag)
-            elif re.search("fraunited", our_name) or re.search("fraunited", opp_name):
+            elif ("fraunited" in our_name) or ("fraunited" in opp_name):
                 synchflag = "false"
                 print(our_name, opp_name, ":synchflag ", synchflag)
-            elif re.search("oxsy", our_name) or re.search("oxsy", opp_name):
+            elif ("oxsy" in our_name) or ("oxsy" in opp_name):
                 synchflag = "false"
                 print(our_name, opp_name, ":synchflag ", synchflag)
             else:

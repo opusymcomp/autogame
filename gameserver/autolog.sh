@@ -11,7 +11,7 @@ export PATH=$LOGANALYZER3_DIR:$PATH
 cd $OUR_TEAM
 
 #your team directory
-if [[ $BRANCHFLAG == "true" ]]; then
+if "${BRANCHFLAG}"; then
 	#if don't use same team name
 	TEAM_L="'${OUR_TEAM}/src/start.sh --offline-logging'"
 	#if use same team name
@@ -29,7 +29,7 @@ rm ${LOG_DIR}/*
 TEAM_R="$HOME/rcss/teams/$OPP/start.sh"
 
 rcssserver server::auto_mode = 1 \
-       server::synch_mode = $SYNCHFLAG \
+       server::synch_mode = ${SYNCHFLAG} \
        server::team_l_start = ${TEAM_L} server::team_r_start = ${TEAM_R} \
        server::kick_off_wait = 50 \
        server::half_time = 300 \
@@ -41,7 +41,7 @@ rcssserver server::auto_mode = 1 \
        server::text_log_compression = 1
 
 # kill process
-if [[ $BRANCHFLAG == "true" ]]; then
+if "${BRANCHFLAG}"; then
 	${OUR_TEAM}/kill
 else
 	${HOME}/rcss/teams/${OUR}/kill

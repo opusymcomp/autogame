@@ -13,7 +13,7 @@ cd `dirname $0`
 mkdir -p ../log/${DIR}
 DATE=`date +%Y%m%d%0k%M`
 
-if [[ $BRANCHFLAG == "true" ]]; then
+if "${BRANCHFLAG}"; then
   rsync -a --delete ${LIBRCSC_DIR}/lib ${USER_NAME}@${HOST}:${LIBRCSC_DIR}
   rsync -a --delete ${OUR_TEAM}/ ${USER_NAME}@${HOST}:${OUR_TEAM}
 fi

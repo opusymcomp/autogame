@@ -9,9 +9,12 @@ def updateOption(option, data, path='./slackbot/setting/option.pkl'):
     if option == 'our':
         ind = 0
         our = getOur()
-        data = data.split("our")[1:]
-        data = [i for i in data if i != '0']
-        data = [our[int(datum)] for datum in data if datum]
+        if data == "our":
+            data = [opp[int(i)] for i in range(len(opp))]
+        else:
+            data = data.split("our")[1:]
+            data = [i for i in data if i != '0']
+            data = [our[int(datum)] for datum in data if datum]
     elif option == 'branch':
         ind = 0
         branch = getBranch()

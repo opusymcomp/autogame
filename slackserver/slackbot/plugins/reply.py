@@ -14,7 +14,6 @@ import sys
 sys.path.append("{}/gametools".format(os.getcwd()))
 import ggssapi_gameresult as ggssapi
 
-branchlist = tl.getBranch()
 branchflag = "false"
 synchflag = "true"
 
@@ -32,12 +31,12 @@ def listen_func(message):
       msg = msg + 'our'+ str(i) + ' : ' + ourlist[i]+ '\n'
     message.reply(msg)
 
-
 @listen_to(r'^.*our0.*')
 def listen_func(message):
     our = message.body['text']
     tl.updateOption('our', our)
     msg = 'Please set up to start the game.\n Choose your branch．( ex. br0br5 )\n'
+    branchlist = tl.getBranch()
     for i in range(len(branchlist)):
         msg = msg + 'br' + str(i) + ' : ' + branchlist[i] + ' \n'
     message.reply(msg)
@@ -135,6 +134,7 @@ def cool_func(message):
     # branch loop
     for our_name in opt[0]:
         # check our team is branch or teams
+        branchlist = tl.getBranch()
         if our_name in branchlist:
             branchflag = "true"
             print(our_name,"is branch")
@@ -142,7 +142,7 @@ def cool_func(message):
             subprocess.run(['./gametools/branchcompile.sh', our_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
             branchflag = "false"
-            print(our_name,"not branch")
+            print(our_name,"is not branch")
 
         # opponent loop
         for opp_name in opt[2]:
@@ -209,7 +209,7 @@ def cool_func(message):
                     if host is not None:
                         break
 
-                msg = "Host {} is assigned (Settings: branch {} gameID {} opp {})\n".format(host, our_name, game, opp_name)
+                msg = "Host {} is assigned (Settings: our {} gameID {} opp {})\n".format(host, our_name, game, opp_name)
                 # message.reply(msg)
                 print(msg)
 

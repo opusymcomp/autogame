@@ -4,6 +4,7 @@ import time
 import datetime
 import subprocess
 import shutil
+import re
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import default_reply
@@ -13,6 +14,9 @@ import sys
 sys.path.append("{}/gametools".format(os.getcwd()))
 import ggssapi_gameresult as ggssapi
 
+branchflag = "false"
+synchflag = "true"
+
 @listen_to(r'^game$')
 def listen_func(message):
     message.reply('Choose new or load for game setting. ( ex. new )\n new : start with new setting \n load : start with load your setting')
@@ -20,8 +24,19 @@ def listen_func(message):
 
 @listen_to(r'^new$')
 def listen_func(message):
-    branchlist = tl.getBranch()
+    msg = 'Choose the our team. ( ex. our1our12our13 )\n When you choose \"our\", you can select all teams\n'
+
+    ourlist = tl.getOur()
+    for i in range(len(ourlist)):
+      msg = msg + 'our'+ str(i) + ' : ' + ourlist[i]+ '\n'
+    message.reply(msg)
+
+@listen_to(r'^.*our0.*')
+def listen_func(message):
+    our = message.body['text']
+    tl.updateOption('our', our)
     msg = 'Please set up to start the game.\n Choose your branch．( ex. br0br5 )\n'
+    branchlist = tl.getBranch()
     for i in range(len(branchlist)):
         msg = msg + 'br' + str(i) + ' : ' + branchlist[i] + ' \n'
     message.reply(msg)
@@ -39,6 +54,18 @@ def listen_func(message):
     message.reply(msg)
 
 
+@listen_to(r'^(?=.*our\d)(?!.*our0).*')
+def listen_func(message):
+    our = message.body['text']
+    tl.updateOption('our', our)
+    msg = 'Choose the opponent team. ( ex. opp1opp12opp13 )\n When you choose \"opp\", you can select all teams\n'
+
+    opplist = tl.getOpponent()
+    for i in range(len(opplist)):
+      msg = msg + 'opp'+ str(i) + ' : ' + opplist[i]+ '\n'
+    message.reply(msg)
+
+
 @listen_to(r'^opp')
 def listen_func(message):
     opponent = message.body['text']
@@ -46,7 +73,6 @@ def listen_func(message):
 
     msg = 'You choose '+ opponent + ' for the opponent team.\n How many games do you want to run? ( ex. 100 )'
     message.reply(msg)
-
 
 @listen_to(r'^\d+$')
 def listen_func(message):
@@ -84,7 +110,7 @@ def cool_func(message):
     shutil.copy('./slackbot/order/ORDER.pkl', './slackbot/order/'+dt_now+'.pkl')
 
     opt = tl.getOption('./slackbot/order/'+dt_now+'.pkl')
-    msg = "ORDER:{}\n   Options:\n   branches:{}\n   n_games:{}\n   opponents:{}\n".format(dt_now, opt[0], opt[1], opt[2])
+    msg = "ORDER:{}\n   Options:\n   ours:{}\n   n_games:{}\n   opponents:{}\n".format(dt_now, opt[0], opt[1], opt[2])
     msg += "   total: {} games".format(len(opt[0])*int(opt[1])*len(opt[2]))
     message.reply(msg)
 
@@ -106,18 +132,43 @@ def cool_func(message):
     total_count = 0
 
     # branch loop
-    for br_name in opt[0]:
-        # send my team branch binary
-        subprocess.run(['./gametools/branchcompile.sh', br_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    for our_name in opt[0]:
+        # check our team is branch or teams
+        branchlist = tl.getBranch()
+        if our_name in branchlist:
+            branchflag = "true"
+            print(our_name,"is branch")
+            # send my team branch binary
+            branchproc = subprocess.Popen(['./gametools/branchcompile.sh', our_name]) #, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        else:
+            branchflag = "false"
+            print(our_name,"is not branch")
 
         # opponent loop
         for opp_name in opt[2]:
+            if our_name == opp_name:
+                print(our_name,opp_name,"same team")
+                continue
 
-            # dir name can be specified by dt_now, br_name and opp_name
-            dirname = "{}/{}_{}".format(dt_now, br_name.split("/")[-1], opp_name.replace("/", "-"))
+            # check opp team can use synce
+            if ("fractals" in our_name) or ("fractals" in opp_name):
+                synchflag = "false"
+                print(our_name, opp_name, ":synchflag ", synchflag)
+            elif ("fraunited" in our_name) or ("fraunited" in opp_name):
+                synchflag = "false"
+                print(our_name, opp_name, ":synchflag ", synchflag)
+            elif ("oxsy" in our_name) or ("oxsy" in opp_name):
+                synchflag = "false"
+                print(our_name, opp_name, ":synchflag ", synchflag)
+            else:
+                synchflag = "true"
+                print(our_name, opp_name, ":synchflag ", synchflag)
+
+            # dir name can be specified by dt_now, our_name and opp_name
+            dirname = "{}/{}_{}".format(dt_now, our_name.split("/")[-1], opp_name.replace("/", "-"))
 
             # append setting information
-            all_settings.append([dirname, br_name, opp_name])
+            all_settings.append([dirname, our_name, opp_name])
 
             # game loop
             for game in range(int(opt[1])):
@@ -158,17 +209,19 @@ def cool_func(message):
                     if host is not None:
                         break
 
-                msg = "Host {} is assigned (Settings: branch {} gameID {} opp {})\n".format(host, br_name, game, opp_name)
+                msg = "Host {} is assigned (Settings: our {} gameID {} opp {})\n".format(host, our_name, game, opp_name)
                 # message.reply(msg)
                 print(msg)
 
                 # execute a game at a host
-                proc = subprocess.Popen(['./gametools/startgame.sh', dirname, host, br_name, str(game), opp_name],
+                if branchflag == "true":
+                    branchproc.wait()
+                proc = subprocess.Popen(['./gametools/startgame.sh', dirname, host, our_name, str(game), opp_name, branchflag, synchflag],
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
                 # append process information
                 working_procs["proc"].append(proc)
-                working_procs["setting"].append([dirname, host, br_name, game, opp_name])
+                working_procs["setting"].append([dirname, host, our_name, game, opp_name])
 
 
     # wait all process
@@ -188,7 +241,7 @@ def cool_func(message):
     write_count = 0
     for setting in all_settings:
         dirname = setting[0]
-        br_name = setting[1]
+        our_name = setting[1]
         opp_name = setting[2]
 
         # initialize
@@ -228,7 +281,7 @@ def cool_func(message):
             result_map["our_shoot"] += float(tmp[30])
             result_map["opp_shoot"] += float(tmp[31])
             if int(tmp[38]) > 0:
-                result_map["dead_players"].append(tmp[0]) 
+                result_map["dead_players"].append(tmp[0])
             count += 1
 
         result_map["n_games"] = count
@@ -249,7 +302,7 @@ def cool_func(message):
             time.sleep(100)
             write_count = 0
             read_count = 0
-        tmp_read_count, tmp_write_count = ggssapi.writeResults(dt_now, br_name, opp_name, result_map)
+        tmp_read_count, tmp_write_count = ggssapi.writeResults(dt_now, our_name, opp_name, result_map)
         read_count += tmp_read_count
         write_count += tmp_write_count
         print('r:', read_count)

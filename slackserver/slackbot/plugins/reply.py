@@ -139,7 +139,7 @@ def cool_func(message):
             branchflag = "true"
             print(our_name,"is branch")
             # send my team branch binary
-            subprocess.run(['./gametools/branchcompile.sh', our_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            branchproc = subprocess.Popen(['./gametools/branchcompile.sh', our_name]) #, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
             branchflag = "false"
             print(our_name,"is not branch")
@@ -214,6 +214,8 @@ def cool_func(message):
                 print(msg)
 
                 # execute a game at a host
+                if branchflag == "true":
+                    branchproc.wait()
                 proc = subprocess.Popen(['./gametools/startgame.sh', dirname, host, our_name, str(game), opp_name, branchflag, synchflag],
                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

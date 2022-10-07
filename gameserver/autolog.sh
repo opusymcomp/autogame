@@ -17,16 +17,16 @@ if "${BRANCHFLAG}"; then
 	#if use same team name
 	#TEAM_L="'${OUR_TEAM}/src/start.sh -t develop --offline-logging'"
 else
-	TEAM_L="$HOME/rcss/teams/$OUR/start.sh"
+	TEAM_L="'$HOME/rcss/teams/$OUR/start.sh'"
 fi
-
-echo ${TEAM_L}
 
 mkdir -p ${LOG_DIR}
 rm ${LOG_DIR}/*
 
 # start loop
 TEAM_R="$HOME/rcss/teams/$OPP/start.sh"
+
+#server::fixed_teamname_l = 'L' server::fixed_teamname_r = 'R' \
 
 rcssserver server::auto_mode = 1 \
        server::synch_mode = ${SYNCHFLAG} \

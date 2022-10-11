@@ -1,2 +1,2 @@
 #!/bin/bash
-python ./slackbot/run.py
+python ./slackbot/plugins/reply.py

@@ -6,7 +6,16 @@ import pickle
 
 
 def updateOption(option, data, path='./slackbot/setting/option.pkl'):
-    if option == 'branch':
+    if option == 'our':
+        ind = 0
+        our = getOur()
+        if data == "our":
+            data = [opp[int(i)] for i in range(len(opp))]
+        else:
+            data = data.split("our")[1:]
+            data = [i for i in data if i != '0']
+            data = [our[int(datum)] for datum in data if datum]
+    elif option == 'branch':
         ind = 0
         branch = getBranch()
         data = data.split("br")[1:]
@@ -24,12 +33,16 @@ def updateOption(option, data, path='./slackbot/setting/option.pkl'):
     else:
         raise ValueError
 
-    # 0: branches, 1: games, 2: opponents
+    # 0: ours, 1: games, 2: opponents
     datalist = [[], 0, []]
     if os.path.exists(path):
         # read previous option
         datalist = getOption(path)
-    datalist[ind] = data
+
+    if option == 'branch':
+        datalist[ind] = data + datalist[ind]
+    else:
+        datalist[ind] = data
 
     with open(path, mode='wb+') as f:
         pickle.dump(datalist, f)
@@ -50,7 +63,7 @@ def getLoadPath(set):
 
 def confirmSetting(path='./slackbot/setting/option.pkl'):
     opt = getOption(path)
-    msg = 'Confirmation \n   - branch : ' + ",".join([b for b in opt[0]]) + '\n   - opponent : ' + ",".join([o for o in opt[2]]) + '\n   - gamenum : ' + str(opt[1]) + '\n ok？'
+    msg = 'Confirmation \n   - ours : ' + ",".join([b for b in opt[0]]) + '\n   - opponent : ' + ",".join([o for o in opt[2]]) + '\n   - gamenum : ' + str(opt[1]) + '\n ok？'
     shutil.copy(path, './slackbot/order/ORDER.pkl')
     return msg
 
@@ -77,6 +90,12 @@ def getSetting():
     cmd = ("ls ./slackbot/setting/")
     settinglist = resCmd(cmd).decode('utf-8').strip().split()
     return settinglist
+
+
+def getOur():
+    cmd = ("source ../config; echo ${OUR_TEAM} ${OPP_TEAMS[@]}")
+    ourlist = resCmd(cmd).decode('utf-8').strip().split()
+    return ourlist
 
 
 def getOpponent():
